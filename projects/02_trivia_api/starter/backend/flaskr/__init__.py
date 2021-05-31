@@ -80,7 +80,7 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/categories/<int:id>/questions', methods=['GET'])
-  def get_cat_questions():
+  def get_cat_questions(id):
     category_id = id
     
     try:
@@ -106,7 +106,7 @@ def create_app(test_config=None):
         abort(422)
 
   @app.route('/questions/<int:id>',methods=['DELETE'])
-  def delete_question():
+  def delete_question(id):
     question_id = id
 
     try:
