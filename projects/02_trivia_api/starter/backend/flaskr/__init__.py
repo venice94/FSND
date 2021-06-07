@@ -58,6 +58,7 @@ def create_app(test_config=None):
   def get_questions():
     try:
         categories=Category.query(Category.id).order_by(Category.id)
+        formatted_cats = {cat.id:cat.type for cat in categories.all()}
         current_category=categories.first()
 
         if len(current_category)==0:
@@ -72,8 +73,8 @@ def create_app(test_config=None):
         return jsonify({
           'questions':questions,
           'total_questions':len(Question.query.all()),
-          'current_category':current_category.type,
-          'categories':categories.all()
+          'current_category':current_category.id,
+          'categories':formatted_cats
         })
 
     except:
