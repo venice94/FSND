@@ -57,7 +57,7 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['GET'])
   def get_questions():
     try:
-        categories=Category.query(Category.id).order_by(Category.id)
+        categories=Category.query.order_by(Category.id)
         formatted_cats = {cat.id:cat.type for cat in categories.all()}
         current_category=categories.first()
 
