@@ -58,8 +58,8 @@ def create_app(test_config=None):
   def get_questions():
     try:
         categories=Category.query.order_by(Category.id)
-        formatted_cats = {cat.id:cat.type for cat in categories.all()}
-        current_category=categories.first()
+        formatted_cats = [cat.format() for cat in categories]
+        current_category=formatted_cats[0]
 
         if len(current_category)==0:
           abort(404)
@@ -73,7 +73,7 @@ def create_app(test_config=None):
         return jsonify({
           'questions':questions,
           'total_questions':len(Question.query.all()),
-          'current_category':current_category.id,
+          'current_category':current_category,
           'categories':formatted_cats
         })
 
