@@ -153,7 +153,7 @@ def create_app(test_config=None):
     search_term = body.get('searchTerm', None)
 
     try:
-        selection = Question.query.filter(question.ilike(searchTerm)).all()
+        selection = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
         questions = paginate_questions(request,selection)
 
         return jsonify({
