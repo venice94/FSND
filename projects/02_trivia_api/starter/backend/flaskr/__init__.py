@@ -64,7 +64,7 @@ def create_app(test_config=None):
         if len(current_category)==0:
           abort(404)
 
-        selection = Question.query.filter(Question.category==current_category.id).order_by(Question.id).all()
+        selection = Question.query.filter(Question.category==current_category['id']).order_by(Question.id).all()
         questions = paginate_questions(request,selection)
 
         if len(questions) == 0:
@@ -85,7 +85,7 @@ def create_app(test_config=None):
     category_id = id
     
     try:
-        current_category = Category.query.filter(Category.id==category_id).one_or_none()
+        current_category = Category.query.filter(Category.id==category_id).one_or_none().format()
         
         if current_category is None:
             abort(404)
@@ -98,7 +98,7 @@ def create_app(test_config=None):
       
         return jsonify({
           'success':True,
-          'current_category':category_id,
+          'current_category':current_category,
           'questions':questions,
           'total_questions':len(Question.query.all())
         })
