@@ -58,13 +58,13 @@ def create_app(test_config=None):
   def get_questions():
     try:
         categories=Category.query.order_by(Category.id).all()
-        formatted_cats = [cat.format() for cat in categories]
-        current_category=formatted_cats[0]
+        formatted_cats = {cat.id:cat.type for cat in categories}
+        current_category = formatted_cats[1]
 
         if len(current_category)==0:
           abort(404)
 
-        selection = Question.query.filter(Question.category==current_category['id']).order_by(Question.id).all()
+        selection = Question.query.filter(Question.category==1).order_by(Question.id).all()
         questions = paginate_questions(request,selection)
 
         if len(questions) == 0:
