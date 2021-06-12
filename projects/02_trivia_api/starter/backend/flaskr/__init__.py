@@ -24,13 +24,14 @@ def create_app(test_config=None):
   def get_categories():
     try:
         categories=Category.query.all()
+        formatted_categories = {cat.id:cat.type for cat in categories}
 
         if len(categories)==0:
             abort(404)
       
         return jsonify({
           'success':True,
-          'categories':categories
+          'categories':formatted_categories
         })
 
     except:
@@ -80,17 +81,18 @@ def create_app(test_config=None):
     except:
       abort(422)
 
-  @app.route('/categories/<int:id>/questions', methods=['GET'])
-  def get_cat_questions(id):
-    category_id = id
+  @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
+  def get_cat_questions(cat_id):
+    category_id = cat_id
     
     try:
-        current_category = Category.query.filter(Category.id==category_id).one_or_none().format()
+        current_category = Category.query.filter(Category.id==category_id).one_or_none()
+        current_category = current_category.type
         
         if current_category is None:
             abort(404)
         
-        selection = Question.query.filter(Question.category==category_id).order_by(id).all()
+        selection = Question.query.filter(Question.category==category_id).order_by(Question.id).all()
         questions = paginate_questions(request,selection)
 
         if len(questions)==0:
