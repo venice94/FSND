@@ -52,7 +52,7 @@ def create_app(test_config=None):
     questions = [question.format() for question in selection]
     current_questions = questions[start:end]
 
-    return current_books
+    return current_questions
 
   @app.route('/questions', methods=['GET'])
   def get_questions():
