@@ -170,7 +170,7 @@ def create_app(test_config=None):
     quiz_category = body.get('quiz_category', None)
 
     try:
-        selection = Question.query.filter(Question.category==quiz_category['id'],~Question.id.in_(previous_questions)).order_by(func.random()).first()
+        selection = Question.query.filter(Question.category==int(quiz_category['id']),~Question.id.in_(previous_questions)).order_by(func.random()).first()
         quiz_question = paginate_questions(request,selection)
 
         if len(question) == 0:
@@ -181,7 +181,7 @@ def create_app(test_config=None):
         })
     except:
         abort(422)
-        
+
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
