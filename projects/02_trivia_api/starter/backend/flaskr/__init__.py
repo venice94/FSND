@@ -163,16 +163,24 @@ def create_app(test_config=None):
     except:
       abort(422)
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
+  @app.route('/quizzes', methods=['POST'])
+  def quiz_questions():
+    body = request.get_json()
+    previous_questions = body.get('previous_questions', None)
+    quiz_category = body.get('quiz_category', None)
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
+    try:
+        selection = Question.query.filter(Question.category==quiz_category['id'],~Question.id.in_(previous_questions)).order_by(func.random()).first()
+        quiz_question = paginate_questions(request,selection)
+
+        if len(question) == 0:
+            abort(404)
+
+        return jsonify({
+          "question":quiz_question
+        })
+    except:
+        abort(422)
 
   '''
   @TODO: 
