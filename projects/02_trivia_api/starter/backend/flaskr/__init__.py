@@ -8,7 +8,7 @@ import traceback
 
 from models import setup_db, Question, Category
 
-QUESTIONS_PER_PAGE = 8
+QUESTIONS_PER_PAGE = 10
 CURRENT_CATEGORY_ID = 1
 
 def create_app(test_config=None):
@@ -55,6 +55,9 @@ def create_app(test_config=None):
     all_categories = Category.query.all()
     formatted_cats = {cat.id:cat.type for cat in all_categories}
 
+    if CURRENT_CATEGORY_ID not in formatted_cats:
+        abort(404)
+    
     current_category = formatted_cats[CURRENT_CATEGORY_ID]
     
     try:
@@ -174,11 +177,12 @@ def create_app(test_config=None):
 
         if quiz_question is None:
             return jsonify({
+              "success":True,
               "question":0
             })
 
         return jsonify({
-          'success':True,
+          "success":True,
           "question":quiz_question.format()
         })
     except:
