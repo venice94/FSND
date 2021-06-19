@@ -46,7 +46,7 @@ class QuestionView extends Component {
 
   createPagination(){
     let pageNumbers = [];
-    let maxPage = Math.ceil(this.state.totalQuestions / 10)
+    let maxPage = Math.ceil(this.state.totalQuestions / 8)
     for (let i = 1; i <= maxPage; i++) {
       pageNumbers.push(
         <span

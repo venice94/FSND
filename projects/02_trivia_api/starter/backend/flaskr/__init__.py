@@ -2,11 +2,14 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import func
 import random
+import traceback
 
 from models import setup_db, Question, Category
 
-QUESTIONS_PER_PAGE = 10
+QUESTIONS_PER_PAGE = 8
+CURRENT_CATEGORY_ID = 1
 
 def create_app(test_config=None):
   # create and configure the app
@@ -37,14 +40,6 @@ def create_app(test_config=None):
     except:
         abort(422)
 
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
-  '''
-
   def paginate_questions(request, selection):
     page = request.args.get('page', 1, type=int)
     start =  (page - 1) * QUESTIONS_PER_PAGE
@@ -57,42 +52,44 @@ def create_app(test_config=None):
 
   @app.route('/questions', methods=['GET'])
   def get_questions():
+    all_categories = Category.query.all()
+    formatted_cats = {cat.id:cat.type for cat in all_categories}
+
+    current_category = formatted_cats[CURRENT_CATEGORY_ID]
+    
     try:
-        categories=Category.query.order_by(Category.id).all()
-        formatted_cats = {cat.id:cat.type for cat in categories}
-        current_category = formatted_cats[1]
-
-        if len(current_category)==0:
-          abort(404)
-
-        selection = Question.query.filter(Question.category==1).order_by(Question.id).all()
+        selection = Question.query.filter(Question.category==CURRENT_CATEGORY_ID).order_by(Question.id).all()
         questions = paginate_questions(request,selection)
-
-        if len(questions) == 0:
+        
+        if len(questions):
           abort(404)
 
         return jsonify({
+          'success':True,
           'questions':questions,
-          'total_questions':len(Question.query.all()),
+          'total_questions':len(selection),
           'current_category':current_category,
           'categories':formatted_cats
         })
 
     except:
+      traceback.print_exc()
       abort(422)
 
   @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
   def get_cat_questions(cat_id):
-    category_id = cat_id
+    global CURRENT_CATEGORY_ID
+
+    CURRENT_CATEGORY_ID = cat_id
     
     try:
-        current_category = Category.query.filter(Category.id==category_id).one_or_none()
+        current_category = Category.query.filter(Category.id==CURRENT_CATEGORY_ID).one_or_none()
         current_category = current_category.type
         
         if current_category is None:
             abort(404)
         
-        selection = Question.query.filter(Question.category==category_id).order_by(Question.id).all()
+        selection = Question.query.filter(Question.category==CURRENT_CATEGORY_ID).order_by(Question.id).all()
         questions = paginate_questions(request,selection)
 
         if len(questions)==0:
@@ -102,7 +99,7 @@ def create_app(test_config=None):
           'success':True,
           'current_category':current_category,
           'questions':questions,
-          'total_questions':len(Question.query.all())
+          'total_questions':len(selection)
         })
 
     except:
@@ -170,16 +167,22 @@ def create_app(test_config=None):
     quiz_category = body.get('quiz_category', None)
 
     try:
-        selection = Question.query.filter(Question.category==int(quiz_category['id']),~Question.id.in_(previous_questions)).order_by(func.random()).first()
-        quiz_question = paginate_questions(request,selection)
+        if quiz_category['id'] == 0:
+            quiz_question = Question.query.filter(~Question.id.in_(previous_questions)).order_by(func.random()).first()
+        else:
+            quiz_question = Question.query.filter(Question.category==int(quiz_category['id']),~Question.id.in_(previous_questions)).order_by(func.random()).first()
 
-        if len(question) == 0:
-            abort(404)
+        if quiz_question is None:
+            return jsonify({
+              "question":0
+            })
 
         return jsonify({
-          "question":quiz_question
+          'success':True,
+          "question":quiz_question.format()
         })
     except:
+        traceback.print_exc()
         abort(422)
 
   @app.errorhandler(404)
