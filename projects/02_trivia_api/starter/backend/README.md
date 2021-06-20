@@ -1,4 +1,4 @@
-    # Full Stack Trivia API Backend
+# Full Stack Trivia API Backend
 
 ## Getting Started
 
@@ -72,23 +72,166 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+GET '/categories/<cat_id>/questions'
+POST '/questions'
+POST '/questions/search'
+DELETE '/questions/<qn_id>'
+GET '/quizzes'
 
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Request arguments: None
+- Returns: A dictionary of categories with id:type key value pair.
+Sample Request: localhost:5000/categories
+Sample Response:
+"categories":{
+        '1' : "Science",
+        '2' : "Art",
+        '3' : "Geography",
+        '4' : "History",
+        '5' : "Entertainment",
+        '6' : "Sports"
+},
+"success":true,
 
-```
+GET '/questions'
+- Fetches an array of questions in the current category, with their answers and difficulty levels
+- Request arguments: None
+- Returns: List of categories, current category, number of questions in the current category as well as an array of te questions in the current category.
+Sample Request: localhost:5000/questions
+Sample Response:
+"categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+},
+"current_category": "Science",
+"total_questions": 3,
+"success":true,
+"questions": [
+    {
+        "answer": "The Liver",
+        "category": 1,
+        "difficulty": 4,
+        "id": 20,
+        "question": "What is the heaviest organ in the human body?"
+    },
+    {
+        "answer": "Alexander Fleming",
+        "category": 1,
+        "difficulty": 3,
+        "id": 21,
+        "question": "Who discovered penicillin?"
+    },
+    {
+        "answer": "Blood",
+        "category": 1,
+        "difficulty": 4,
+        "id": 22,
+        "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+]
 
+GET '/categories/<cat_id>/questions'
+- Fetches an array of questions in the specified category, with their answers and difficulty levels.
+- Request arguments: category id
+- Returns: Current category, number of questions in the current category as well as an array of te questions in the current category.
+Sample Request: localhost:5000/categories/1/questions
+Sample Response:
+"current_category": "Science",
+"total_questions": 3,
+"success":true,
+"questions": [
+    {
+        "answer": "The Liver",
+        "category": 1,
+        "difficulty": 4,
+        "id": 20,
+        "question": "What is the heaviest organ in the human body?"
+    },
+    {
+        "answer": "Alexander Fleming",
+        "category": 1,
+        "difficulty": 3,
+        "id": 21,
+        "question": "Who discovered penicillin?"
+    },
+    {
+        "answer": "Blood",
+        "category": 1,
+        "difficulty": 4,
+        "id": 22,
+        "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+]
+
+POST '/questions'
+- Adds a new question to the database
+- Request arguments: Question, category, answer and difficulty level
+- Returns: Result of the request
+Sample Request: localhost:5000/questions
+"question":"What is the question?",
+"answer":"This is the answer.",
+"difficulty":3,
+"category":2
+Sample Response:
+"success":true
+
+POST '/questions/search'
+- Search for questions based on the search term given. Search term is case insensitive.
+- Request arguments: search term
+- Returns: Questions that match the search term given.
+Sample Request: localhost:5000/questions/search
+"searchTerm":"world cup"
+Sample Response:
+"questions": [
+    {
+        "answer": "Brazil",
+        "category": 6,
+        "difficulty": 3,
+        "id": 10,
+        "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+        "answer": "Uruguay",
+        "category": 6,
+        "difficulty": 4,
+        "id": 11,
+        "question": "Which country won the first ever soccer World Cup in 1930?"
+    }
+],
+"success": true
+
+DELETE '/questions/<qn_id>'
+- Deletes the specified question
+- Request argument: question id
+- Returns: Result of the request
+Sample Request: localhost:5000/questions/1
+Sample Response:
+"success":true
+
+GET '/quizzes'
+- Randomly fetches a question from the specified category. If no category is specified, the question will be fetched from any category.
+- Request argument: Previous questions, quiz category
+- Returns: Question with answer and difficulty level
+Sample Request: localhost:5000/quizzes
+"previous_questions":[1,2,3],
+    "quiz_category":{
+        "id":1
+    }
+Sample Response:
+question": {
+    "answer": "Alexander Fleming",
+    "category": 1,
+    "difficulty": 3,
+    "id": 21,
+    "question": "Who discovered penicillin?"
+},
+"success": true
 
 ## Testing
 To run the tests, run

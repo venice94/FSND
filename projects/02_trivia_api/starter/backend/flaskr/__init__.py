@@ -56,6 +56,7 @@ def create_app(test_config=None):
     formatted_cats = {cat.id:cat.type for cat in all_categories}
 
     if CURRENT_CATEGORY_ID not in formatted_cats:
+        print(CURRENT_CATEGORY_ID)
         abort(404)
     
     current_category = formatted_cats[CURRENT_CATEGORY_ID]
@@ -108,9 +109,9 @@ def create_app(test_config=None):
     except:
         abort(422)
 
-  @app.route('/questions/<int:id>',methods=['DELETE'])
+  @app.route('/questions/<int:qn_id>',methods=['DELETE'])
   def delete_question(id):
-    question_id = id
+    question_id = qn_id
 
     try:
         question = Question.query.filter(Question.id==question_id).one_or_none()
